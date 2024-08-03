@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from preprocess_utils import *
 import re
+from split_file import splitFile
 import sys
 
 
@@ -95,6 +96,8 @@ def preprocess():
 
     for var in ['debriefing', 'behavior', 'samples', 'blinks']:
         eval(var).to_feather(os.path.join(data_dir, f'{var}.feather'), compression='zstd')
+
+    splitFile(os.path.join(data_dir, 'samples.feather'), 20 * 1024 ** 2)
 
 
 if __name__ == '__main__':

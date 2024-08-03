@@ -1,6 +1,6 @@
 # Wink or blush?
 
-This package contains programs related to the paper _'Wink or blush? Pupil-linked brain arousal signals
+This repository contains programs and data related to the paper _'Wink or blush? Pupil-linked brain arousal signals
 both change and uncertainty during assessment of changing environmental regularities'_
 
 ## Experimental scripts
@@ -19,7 +19,7 @@ included in the export.
 ## Preprocessing 
 
 Raw data can be preprocessed with the python script located in the analysis directory.
-__Data from the reported experiment is published in preprocessed form, so no need to preproces it.__
+__Data from the reported experiment is included in preprocessed form, so no need to preproces it.__
 
 For preprocessing imput data from the probabilistic reversal learning task should be saved in directory
 _analysis/rawdata/experiment_, while input data from the visual control task should be saved in directory
@@ -28,6 +28,8 @@ detection results keeping the original file names.
 
 Preprocessing can be run by executing `python preprocess.py` from the _analysis_ directory. Preprocessed data
 is saved in Apache Feather format to the _analysis/data_ folder (overwriting any previous data).
+The data file _analysis/data/samples.feather_ is also split into pieces _analysis/data/samples.feather.XXX_ to
+accomodate github file size limits. It is automatically merged by the analysis notebooks.
 
 ## Analysis
 
