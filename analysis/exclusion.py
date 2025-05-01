@@ -11,7 +11,7 @@ def exclusion(behavior, samples, threshold=0.25, minCount=4, excludedSubjects=No
     iRates = samples.groupby(['subjectId', 'session', 'Trial']).interpolated.mean()
     excluded |= behavior.merge(iRates, left_on=['subjectId', 'session', 'trialCount'], right_index=True).interpolated >= threshold
 
-    excluded |= ~(behavior.session == 'visual') & ((behavior.fillerDifference.shift() < 4) | (behavior.fillerLearned.shift() < 3))
+    excluded |= ~(behavior.session.str.endswith('visual')) & ((behavior.fillerDifference.shift() < 4) | (behavior.fillerLearned.shift() < 3))
 
     countKey = ['subjectId', 'session', 'condType']
     counts = pd.DataFrame()

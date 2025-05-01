@@ -1,6 +1,6 @@
 # Wink or blush?
 
-This repository contains programs and data related to the paper _'Wink or blush? Pupil-linked brain arousal signals
+This repository contains programs and data related to the paper _'Wink or blush? Pupil-linked phasic arousal signals
 both change and uncertainty during assessment of changing environmental regularities'_
 
 ## Experimental scripts
@@ -35,8 +35,17 @@ accomodate github file size limits. It is automatically merged by the analysis n
 
 Analysis is done by the following Jupyter notebooks:
 
-* _analysis/exclusions.ipynb_ : Calculate statistics for excluded trials and interpolated data ratios
-* _analysis/behavior.ipynb_ : Calculate behavioral task performance results
-* _analysis/pointwise.ipynb_ : calculate the effects of change and uncertainty on pupil-linked brain arousal
+* _analysis/afternonpref.ipynb_ : In some cases the non-preferred side is selected in the last trial of the filler block. Test if it has significant effect
+* _analysis/behavior.ipynb_ : Calculate behavioral task performance
+* _analysis/blinkrate.ipynb_ : Test the effect of condition on blink rates during the cue presentation period
+* _analysis/exclusions_report.ipynb_ : Calculate statistics of the excluded trials and interpolated data ratios
+* _analysis/maximizers.ipynb_ : Test correlation of response strategy / median response time and change / uncertainty related pupil responses
+* _analysis/meanresponses.ipynb_ : Analysis of the mean pupil responses, linear modeling
+* _analysis/pointwise.ipynb_ : Time-course analysis of the effects of change and uncertainty on pupil-linked arousal
+* _analysis/saccaderate.ipynb_ : Experimental analysis of the (micro)saccade rates in different conditions (requires raw eye tracker data)
+* _analysis/wn_behavior.ipynb_ : Calculate behavioral task performance the control experiment (see supplement)
+* _analysis/wn_exclusions_report.ipynb_ : Calculate statistics of the excluded trials and interpolated data ratios in the control experiment (see supplement)
+* _analysis/wn_meanresponses.ipynb_ : Analysis of the mean pupil responses in the control experiment (see supplement)
+* _analysis/wn_pointwise.ipynb_ : Time-course analysis of the effects of change on pupil-linked arousal in the control experiment (see supplement)
 
 To re-run notebooks preprocessed data must be located in directory _analysis/data_.

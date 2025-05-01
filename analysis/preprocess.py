@@ -68,6 +68,8 @@ def preprocess():
     sessions = []
     for session in os.listdir(rawdata_dir):
         session_dir = os.path.join(rawdata_dir, session)
+        if not os.path.isdir(session_dir):
+            continue
         session_subjects = [int(re.search('(?<=subject_)\\d+(?=_)', f).group(0)) for f in os.listdir(session_dir) if re.match('.+\\.csv$', f)]
         subjects.extend(session_subjects)
         sessions.extend([session] * len(session_subjects))

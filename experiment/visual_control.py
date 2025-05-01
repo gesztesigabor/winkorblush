@@ -2,6 +2,7 @@
 import configparser
 import numpy as np
 import time
+from plan_conds import planConds
 from utils import *
 
 
@@ -16,21 +17,19 @@ def experiment(config, subjectId, win, et):
     seed = expConfig.getint('RandomSeed', None)
     if seed is not None:
         np.random.seed(seed)
-    repetitions = expConfig.getint('ExpTrialPerCondType', 1)
-    condTypes = np.random.permutation(['normal', 'wink', 'blush', 'hint'] * repetitions)
-    while np.any((condTypes[2:]==condTypes[1:-1]) & (condTypes[1:-1]==condTypes[:-2])):
-        condTypes = np.random.permutation(condTypes)
+    preparationTime = expConfig.getfloat('PreparationTime', 2.)
+    cueTime = expConfig.getfloat('CueTime', 4.)
 
-    for condType in condTypes:
+    for condType in planConds(expConfig):
         trialCount = et.inc()
         display(win, 'warn')
-        wait(2.)
+        wait(preparationTime)
 
         if condType == 'hint':
             display(win, 'hint_right' if np.random.binomial(1, 0.5) else 'hint_left')
         else:
             display(win, condType)
-        wait(4.)
+        wait(cueTime)
 
         dataFile.write(f'{subjectId},{trialCount},{condType}\n')
         checkQuit()

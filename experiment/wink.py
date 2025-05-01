@@ -2,6 +2,7 @@
 import configparser
 import numpy as np
 import time
+from plan_conds import planConds
 from utils import *
 
 
@@ -17,23 +18,25 @@ def fillers(expConfig, subjectId, win, dataFile, et, preferred, score):
     minLearnedResponses = expConfig.getint('FillerMinLearnedResponses', 0)
     fillerCount = 0
     maxFillers = expConfig.getint('FillerMaxTrials', -1)
+    feedbackTime = expConfig.getfloat('FeedbackTime', 1.)
+    xEyePostfix = 'x' if expConfig.getboolean('XEye', False) else ''
 
     while ((difference < minDifference) or (learnedResponses < minLearnedResponses)) and ((fillerCount < maxFillers) or (maxFillers < 0)):
         fillerCount += 1
         trialCount = et.inc() if et else None
         if np.random.binomial(1, prefProb):
             difference += 1
-            correctResponse = side(preferred)			
+            direction = side(preferred)			
         else:
             difference -= 1
-            correctResponse = side(1 - preferred)
+            direction = side(1 - preferred)
 
-        display(win, 'select', score)
+        display(win, f'select{xEyePostfix}', score)
         response = waitForKey(['left', 'right'])
-        feedback = 'win' if response == correctResponse else 'loose'
-        score += 1 if response == correctResponse else -1
-        display(win, f'{correctResponse}_{feedback}', score)
-        wait(1.)
+        feedback = 'win' if response == direction else 'loose'
+        score += 1 if response == direction else -1
+        display(win, f'{direction}_{feedback}{xEyePostfix}', score)
+        wait(feedbackTime)
 
         if response == side(preferred):
             learnedResponses += 1
@@ -41,7 +44,7 @@ def fillers(expConfig, subjectId, win, dataFile, et, preferred, score):
             learnedResponses = 0
 
         if dataFile:
-            dataFile.write(f'{subjectId},{trialCount},filler,{side(preferred)},{correctResponse},{response},{score}\n')
+            dataFile.write(f'{subjectId},{trialCount},filler,{side(preferred)},{direction},{response},{score}\n')
 
     return score
 
@@ -62,19 +65,20 @@ def experiment(config, subjectId, win, training, et=None):
         dataFile = None
  
     preferred = np.random.binomial(1, 0.5)
-    repetitions = 1 if training else expConfig.getint('ExpTrialPerCondType', 1)
-    condTypes = np.random.permutation(['normal', 'wink', 'blush', 'hint'] * repetitions)
-    while np.any((condTypes[2:] == condTypes[1:-1]) & (condTypes[1:-1] == condTypes[:-2])):
-        condTypes = np.random.permutation(condTypes)
     prefProb = expConfig.getfloat('PreferredProbability', 0.8)
     score = expConfig.getint('InitialScore', 100)
+    preparationTime = expConfig.getfloat('PreparationTime', 2.)
+    cueTime = expConfig.getfloat('CueTime', 4.)
+    feedbackTime = expConfig.getfloat('FeedbackTime', 1.)
+    afterCueKey = expConfig.get('AfterCueKey', '')
+    xEyePostfix = 'x' if expConfig.getboolean('XEye', False) else ''
 
-    for condType in condTypes:
+    for condType in planConds(expConfig, training):
         score = fillers(expConfig, subjectId, win, dataFile, et, preferred, score)
 
         trialCount = et.inc() if et else None
         display(win, 'warn')
-        wait(2.)
+        wait(preparationTime)
 
         if condType == 'wink':
             preferred = 1 - preferred
@@ -82,22 +86,26 @@ def experiment(config, subjectId, win, training, et=None):
             preferred = np.random.binomial(1, 0.5)
 
         if condType == 'hint':
-            correctResponse = side(preferred)
-            display(win, f'hint_{correctResponse}')
+            direction = side(preferred)
+            display(win, f'hint_{direction}')
         else:
-            correctResponse = side(preferred if np.random.binomial(1, prefProb) else 1 - preferred)
+            direction = side(preferred if np.random.binomial(1, prefProb) else 1 - preferred)
             display(win, condType)
-        wait(4.)
+        wait(cueTime)
 
-        display(win, 'select', score)
+        if afterCueKey != '':
+            display(win, f'aftercue_{afterCueKey}')
+            waitForKey([afterCueKey])
+
+        display(win, f'select{xEyePostfix}', score)
         response = waitForKey(['left', 'right'])
-        feedback = 'win' if response == correctResponse else 'loose'		
-        score += 1 if response == correctResponse else -1
-        display(win, f'{correctResponse}_{feedback}', score)
-        wait(1.)
+        feedback = 'win' if response == direction else 'loose'		
+        score += 1 if response == direction else -1
+        display(win, f'{direction}_{feedback}{xEyePostfix}', score)
+        wait(feedbackTime)
 
         if dataFile:
-            dataFile.write(f'{subjectId},{trialCount},{condType},{side(preferred)},{correctResponse},{response},{score}\n')
+            dataFile.write(f'{subjectId},{trialCount},{condType},{side(preferred)},{direction},{response},{score}\n')
     
     if dataFile:
         dataFile.close()
